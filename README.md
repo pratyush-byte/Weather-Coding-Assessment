@@ -2,16 +2,16 @@
 
 ## Table of Contents
 
-1. [Set-up](#1-setup-one-time)
-2. [Project Structure](#project-structure)
-3. [Problem 1 – Schema](#problem-1--schema)
-4. [Problem 2 – Ingestion](#problem-2--ingestion)
-5. [Problem 3 – Data Analysis](#problem-3--data-analysis)
-6. [Problem 4 – REST API](#problem-4--rest-api)
-7. [Automated Tests](#automated-tests)
-8. [Deployment](#deployment)
-9. [Verify Everything](#verify-everything)
-10. [Extra Credit: Deployment Architecture](#extra-credit--deployment-architecture)
+1. [Set-up]
+2. [Project Structure]
+3. [Problem 1 – Schema]
+4. [Problem 2 – Ingestion]
+5. [Problem 3 – Data Analysis]
+6. [Problem 4 – REST API]
+7. [Automated Tests]
+8. [Deployment]
+9. [Verify Everything]
+10. [Extra Credit: Deployment Architecture]
 
 ---
 
