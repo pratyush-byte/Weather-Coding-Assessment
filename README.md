@@ -39,7 +39,7 @@ Turn thousands of flat‑files into relational rows **safely** (no duplicates) a
 ### ▶︎ Run
 
 ```bash
-python ingest.py                 # assumes wx_data/ exists
+python ingest.py      
 ```
 
 Sample output
