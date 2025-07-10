@@ -12,7 +12,9 @@
 
 3. **Create the empty tables**
 ## Due to storage issue in GIT i have deleted the weather.db file, so please run this file
-   python create_db.py                          # produces weather.db with 3 empty tables
+```bash
+   python create_db.py       # produces weather.db with 3 empty tables
+```                   
 
 
 | Table                  | What it stores                   | Primary Key          |
