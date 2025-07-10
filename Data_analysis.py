@@ -4,7 +4,7 @@ import logging
 import time
 from collections import namedtuple
 from pathlib import Path
-from typing import Dict, Tuple
+from typing import Dict, Tuple, Optional
 
 from sqlalchemy import create_engine, text
 from sqlalchemy.engine import Connection, Result
@@ -52,6 +52,11 @@ Stats = namedtuple("Stats", "tmax tmin precip")
 # Helpers
 # ---------------------------------------------------------------------------
 
+def _fmt(x: Optional[float]) -> str:
+    """Format numbers nicely; return 'NA' if value is None."""
+    return "NA" if x is None else f"{x:.1f}"
+
+
 def _fetch_all_stats(conn: Connection) -> Dict[Tuple[str, int], Stats]:
     """Dump the current yearly stats into a dict."""
     rows: Result = conn.execute(text(
@@ -82,18 +87,28 @@ def main() -> None:
         old = before.get(key)
         if old is None:
             added += 1
-            log.info("NEW   %s %4d  Tmax=%.1f  Tmin=%.1f  Precip=%.1f", key[0], key[1], *new)
+            log.info(
+                "NEW   %s %4d  Tmax=%s  Tmin=%s  Precip=%s",
+                key[0], key[1], _fmt(new.tmax), _fmt(new.tmin), _fmt(new.precip)
+            )
         elif old != new:
             changed += 1
-            log.info("CHG   %s %4d  %.1f→%.1f  %.1f→%.1f  %.1f→%.1f",
-                     key[0], key[1], old.tmax, new.tmax, old.tmin, new.tmin, old.precip, new.precip)
+            log.info(
+                "CHG   %s %4d  %s→%s  %s→%s  %s→%s",
+                key[0], key[1],
+                _fmt(old.tmax), _fmt(new.tmax),
+                _fmt(old.tmin), _fmt(new.tmin),
+                _fmt(old.precip), _fmt(new.precip)
+            )
         else:
             same += 1
 
     removed = len(before) - (added + changed + same)
     elapsed = time.perf_counter() - start
-    log.info("Yearly aggregation finished: %s added · %s changed · %s removed · %s unchanged (%.2f s)",
-             f"{added:,}", f"{changed:,}", f"{removed:,}", f"{same:,}", elapsed)
+    log.info(
+        "Yearly aggregation finished: %s added · %s changed · %s removed · %s unchanged (%.2f s)",
+        f"{added:,}", f"{changed:,}", f"{removed:,}", f"{same:,}", elapsed
+    )
 
 
 if __name__ == "__main__":
