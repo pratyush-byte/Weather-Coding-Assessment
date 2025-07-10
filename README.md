@@ -1,27 +1,76 @@
 # Weather Coding Challenge – Quick Guide
 
+## Table of Contents
+
+1. [Set-up](#1-setup-one-time)
+2. [Project Structure](#project-structure)
+3. [Problem 1 – Schema](#problem-1--schema)
+4. [Problem 2 – Ingestion](#problem-2--ingestion)
+5. [Problem 3 – Data Analysis](#problem-3--data-analysis)
+6. [Problem 4 – REST API](#problem-4--rest-api)
+7. [Automated Tests](#automated-tests)
+8. [Deployment](#deployment)
+9. [Verify Everything](#verify-everything)
+10. [Extra Credit: Deployment Architecture](#extra-credit--deployment-architecture)
+
+---
+
 ## 🛠 1 · Set‑up (one‑time)
 
-1. **Create & activate** a virtual‑environment
+1. **Create & activate** a virtual‑environment  
+   ```bash
    python3 -m venv venv && source venv/bin/activate  # Windows: venv\Scripts\activate
-2. **Install libraries** (all problems)
-   Initial_checks_install.py
+   ```
+2. **Install libraries** (all problems)  
+   ```bash
+   python Initial_checks_install.py
+   ```
+
+---
+
+##  Project Structure
+
+```
+weather-coding-assessment/
+├── api/              # API logic (routes, models, helpers)
+│   ├── __init__.py
+│   ├── models.py
+│   ├── routes.py
+│   ├── pagination.py
+├── tests/            # All automated tests
+├── logs/             # Log files
+├── app_flask.py      # API entry point
+├── ingest.py         # Data ingestion script
+├── Data_analysis.py  # Data analysis script
+├── create_db.py      # DB schema creation
+├── requirements.txt  # Python dependencies
+├── Dockerfile        # For containerized deployment
+└── README.md         # This file
+```
+### Docker (Planned for Deployment)
+
+> **Note:**  
+> Docker support is planned, but a `Dockerfile` is not yet included in this repository.  
+> When available, you will be able to build and run the API in a container for easy deployment.
+---
 
 ## My solution and approach including with step by step instructions to run the code
+
+---
+
 ## Problem 1 – Schema
 
-3. **Create the empty tables**
-## Due to storage issue in GIT i have deleted the weather.db file, so please run this file
-```bash
+3. **Create the empty tables**  
+   *Due to storage issue in GIT I have deleted the weather.db file, so please run this file:*
+   ```bash
    python create_db.py       # produces weather.db with 3 empty tables
-```                   
+   ```                   
 
-
-| Table                  | What it stores                   | Primary Key          |
-| ---------------------- | -------------------------------- | -------------------- |
-| `station`              | Every weather‑station ID         | `id`                 |
-| `weather_daily`        | *station × day* raw observations | `(station_id, date)` |
-| `weather_yearly_stats` | *station × year* aggregates      | `(station_id, year)` |
+| Table                  | What it stores                   Primary Key           |
+| ---------------------- | -------------------------------- --------------------  |
+| `station`              | Every weather‑station ID         |`id`                 |
+| `weather_daily`        | *station × day* raw observations | `(station_id, date` |
+| `weather_yearly_stats` | *station × year* aggregates      | `(station_id, year)`|
 
 *Integers keep raw units: tenth‑°C & tenth‑mm; `‑9999` → `NULL`.*
 
@@ -33,7 +82,7 @@
 
 Turn thousands of flat‑files into relational rows **safely** (no duplicates) and **quickly** (bulk inserts, batching).
 
-### 🚀 Key Features
+###  Key Features
 
 | Aspect                | Detail                                                                  |
 | --------------------- | ----------------------------------------------------------------------- |
@@ -65,7 +114,7 @@ Done: 10 957 890 new · 10 957 dup
 
 Condense millions of daily rows into **one row per station × year**, ready for fast API queries.  A diff log detects data drift instantly.
 
-### 🚀 Key Features
+###  Key Features
 
 | Aspect          | Detail                                                 |
 | --------------- | ------------------------------------------------------ |
@@ -96,7 +145,7 @@ NEW   USC00110072 1985  Tmax=12.3  Tmin=-1.5  Precip=67.4
 
 Serve cleaned weather data to any client via JSON with **filtering, pagination & live docs**.
 
-### 🚀 Key Features
+###  Key Features
 
 | Aspect             | Detail                                                                      |
 | ------------------ | --------------------------------------------------------------------------- |
@@ -123,13 +172,69 @@ GET http://127.0.0.1:5000/api/weather?page=1&page_size=5&station_id=USC00110072
 
 ---
 
+##  Automated Tests
+
+All modules are covered by automated tests using `pytest`.
+
+### ▶︎ Run All Tests
+
+Install pytest if you haven't:
+
+```bash
+pip install pytest
+```
+
+Run all tests:
+
+```bash
+pytest -q
+```
+
+---
+
+##  Deployment
+
+### Local Development
+
+1. Install dependencies:
+   ```bash
+   pip install -r requirements.txt
+   ```
+2. Run the API:
+   ```bash
+   python app_flask.py
+   ```
+
+### Docker (Recommended for Deployment)
+
+1. Build the Docker image:
+   ```bash
+   docker build -t weather-api .
+   ```
+2. Run the container:
+   ```bash
+   docker run -p 5000:5000 weather-api
+   ```
+
+### Cloud (Example: AWS Elastic Beanstalk)
+
+- Use the provided Dockerfile.
+- Set environment variables for DB connection if needed.
+- Use AWS RDS for production database.
+
+---
+
 ## 🔎 Verify Everything
 
-```
+```bash
 python check_counts.py            # rows & samples from all three tables
-pytest -q                         # runs unit tests (ingestion only)
+pytest -q                         # runs unit tests (all modules)
 ```
 
-## EXTRA CREDIT  Deployment
+---
+
+## EXTRA CREDIT – Deployment Architecture
 
 I don’t have hands-on production cloud experience yet, but from my studies and research this is the approach I would take. I’d first containerize the whole project with Docker, ensuring the code and dependencies run identically everywhere. I’d push that image to AWS Elastic Beanstalk, which can launch and manage an EC2 instance, pull the image, and keep the Flask API live behind an autoscaling load balancer. For storage I’d provision a managed Amazon RDS PostgreSQL database during the same Beanstalk setup, then drop the generated connection string into my environment variables. Finally, I’d automate the nightly ingest.py run using Elastic Beanstalk’s built-in cron.yaml (or a lightweight AWS Lambda trigger if more flexibility is needed). This stack gives me a fully managed deployment—API, database, and scheduled ingestion—while letting me focus on code rather than server maintenance.
+
+---

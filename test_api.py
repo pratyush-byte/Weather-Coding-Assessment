@@ -46,6 +46,28 @@ def test_weather_page_out_of_range(client):
     rv = client.get("/api/weather?page=99999&page_size=50")
     assert rv.status_code == 404
 
+def test_weather_pagination_meta(client):
+    rv = client.get("/api/weather?page=1&page_size=2")
+    assert rv.status_code == 200
+    meta = rv.get_json()["meta"]
+    assert "total_pages" in meta
+    assert "page" in meta
+    assert meta["page"] == 1
+
+def test_weather_bad_query(client):
+    rv = client.get("/api/weather?station_id=INVALID123&page=abc&page_size=xyx")
+    assert rv.status_code == 400
+
+def test_weather_invalid_station(client):
+    """Requesting a non-existent station_id returns empty data."""
+    rv = client.get("/api/weather?station_id=INVALID123&page=1&page_size=5")
+    assert rv.status_code == 200
+    assert rv.get_json()["data"] == []
+
+def test_weather_negative_page(client):
+    """Negative page numbers should return 400."""
+    rv = client.get("/api/weather?station_id=INVALID123&page=-1&page_size=5")
+    assert rv.status_code == 400
 # ---------------------------------------------------------------------------
 # Tests – /api/weather/stats (yearly) ----------------------------------------
 # ---------------------------------------------------------------------------
@@ -74,3 +96,20 @@ def test_stats_filter_station_year(client):
     if rows:
         r = rows[0]
         assert r["station_id"] == station_id and r["year"] == year
+    
+    def test_stats_invalid_year(client):
+        """Requesting a non-existent year returns empty data."""
+        rv = client.get("/api/weather/stats?year=3000&page=1&page_size=5")
+        assert rv.status_code == 200
+        assert rv.get_json()["data"] == []
+
+def test_stats_missing_params(client):
+    """Missing required params should still return valid response."""
+    rv = client.get("/api/weather/stats")
+    assert rv.status_code == 200
+    assert "data" in rv.get_json()
+
+def test_swagger_docs(client):
+    rv = client.get("/docs")
+    assert rv.status_code == 200
+    assert b"Swagger" in rv.data or b"OpenAPI" in rv.data
