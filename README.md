@@ -111,6 +111,8 @@ Serve cleaned weather data to any client via JSON with **filtering, pagination &
 ```bash
 export FLASK_APP=app_flask.py     # Windows: set FLASK_APP=app_flask.py
 flask run                          # starts http://127.0.0.1:5000/
+# OR RUN
+python app_flask.py
 ```
 
 *Open* [http://127.0.0.1:5000/docs](http://127.0.0.1:5000/docs) for Swagger, or test with Postman:
