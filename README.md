@@ -6,9 +6,14 @@
    python3 -m venv venv && source venv/bin/activate  # Windows: venv\Scripts\activate
 2. **Install libraries** (all problems)
    Initial_checks_install.py
-3. **Create the empty tables**
-   python create_db.py                          # produces weather.db with 3 empty tables
+
+## My solution and approach including with step by step instructions to run the code
 ## Problem 1 – Schema
+
+3. **Create the empty tables**
+## Due to storage issue in GIT i have deleted the weather.db file, so please run this file
+   python create_db.py                          # produces weather.db with 3 empty tables
+
 
 | Table                  | What it stores                   | Primary Key          |
 | ---------------------- | -------------------------------- | -------------------- |
